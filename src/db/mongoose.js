@@ -1,12 +1,22 @@
-const mongoose = require('mongoose');
+// Load env variables
+require("dotenv").config({ path: "config/dev.env" });
 
-const uri = process.env.Mongo_URL; // Use 'URL' instead of 'MONGO_URI'
+const mongoose = require("mongoose");
+
+const uri = process.env.Mongo_URL;
+
+if (!uri) {
+  throw new Error("❌ Mongo_URL environment variable is not defined!");
+}
 
 mongoose.connect(uri, {
-    tls: true, // Ensure TLS is enabled
-    serverSelectionTimeoutMS: 5000, // Timeout if MongoDB isn't responding
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
 }).then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
-}).catch(err => {
-    console.error("❌ MongoDB Connection Error:", err);
+  console.log("✅ Connected to MongoDB");
+}).catch((err) => {
+  console.error("❌ MongoDB Connection Error:", err);
 });
+
+module.exports = mongoose;

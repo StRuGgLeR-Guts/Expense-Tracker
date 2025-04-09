@@ -2,17 +2,22 @@ const express =require("express")
 const router = new express.Router()
 const USER =require("../models/users")
 const auth = require("../middleware/auth")
-const User = require("../models/users")
-const multer = require('multer')
 const sharp = require("sharp")
+const jwt = require('jsonwebtoken');
 const {sendWelEmail,sendCanEmail} = require("../emails/accounts")
 
 
 router.post("/users", async(req,res)=>{
     const user=new USER(req.body)
     try{
-        const token =await user.makeToken()
-        await user.save()  
+        //const token =await user.makeToken()
+        const token = jwt.sign({ _id: user._id.toString() }, process.env.TOKEN);
+
+        // Push token to tokens array
+        user.tokens = user.tokens.concat({ token });
+        await user.save();
+
+         
         sendWelEmail(user.email,user.username)     
         res.status(201).send({user,token})
     }
@@ -24,7 +29,10 @@ router.post("/users", async(req,res)=>{
 router.post("/users/login",async(req,res)=>{
     try{
         const user= await USER.findByCredentials(req.body.username,req.body.password)
-        const token = await user.makeToken()
+        const token = jwt.sign({ _id: user._id.toString() }, process.env.TOKEN);
+        user.tokens = user.tokens.concat({ token });
+        await user.save();
+
         res.send({user,token})
     }
     catch(e){
@@ -86,50 +94,6 @@ router.delete('/users/me', auth, async (req, res) => {
       res.status(500).send(err.message)
     }
   })
-
-
-const picture = multer({
-    limits:{
-        fileSize:1000000
-    },
-    fileFilter(req,file,cb){
-        if(!file.originalname.match(/\.(jpg|jpeg|png)$/)){
-           return cb(new Error("The file must be a image"))
-        }
-        cb(undefined,true)
-    }
-})
-
-router.post('/users/me/avatar',auth,picture.single('avatar'), async(req, res) => {
-    const buffer = await sharp(req.file.buffer).resize({width: 250,height: 250}).png().toBuffer()
-    req.user.avatar = buffer
-    await req.user.save()
-    res.send()
-    
-
-}, (error, req, res, next) => {
-    res.status(400).send({ error: error.message })
-})
-
-router.get('/users/:id/avatar',async(req,res)=>{
-    try{
-        const user = await User.findById(req.params.id)
-        if(!user||!user.avatar){
-            throw new Error()
-        }
-        res.set('Content-Type','image/png')
-        res.send(user.avatar)
-    }
-    catch(e){
-        res.status(404).send()
-    }
-})
-
-router.delete('/users/me/avatar',auth,async(req,res)=>{
-    req.user.avatar=undefined
-    await req.user.save()
-    res.send()
-})
 
 
 

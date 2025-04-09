@@ -1,14 +1,14 @@
 const mongoose =require("mongoose")
 
-const taskSchema = new mongoose.Schema({
-    description:{
-    type:String,
+const inputSchema = new mongoose.Schema({
+    Income:{
+    type:Number,
     required:true,
     trim:true
 },
-completed:{
-    type:Boolean,
-    default:false
+Limit:{
+    type:Number,
+    required:true
 },
 owner:{
     type:mongoose.Schema.Types.ObjectId,
@@ -20,5 +20,5 @@ owner:{
     timestamps:true
 })
 
-const Tasks=mongoose.model("tasks",taskSchema)
-module.exports=Tasks
+const Inputs=mongoose.model("inputs",inputSchema)
+module.exports=Inputs

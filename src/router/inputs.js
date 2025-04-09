@@ -1,23 +1,23 @@
 const express = require("express")
 const router = new express.Router()
 const auth = require("../middleware/auth")
-const TASKS = require("../models/tasks")
+const INPUTS = require("../models/inputs")
 
-router.post("/tasks",auth,async(req,res)=>{
-    const tasks=new TASKS({
+router.post("/inputs",auth,async(req,res)=>{
+    const inputs=new INPUTS({
         ...req.body,
         owner:req.user._id
     })
     try{
-        await tasks.save()
-        res.status(201).send(tasks)
+        await inputs.save()
+        res.status(201).send(inputs)
     }
     catch(e){
         res.status(400).send(e)
     }
 })
 
-router.get("/tasks", auth, async (req, res) => {
+router.get("/inputs", auth, async (req, res) => {
     const match={}
     const sort ={}
     
@@ -31,7 +31,7 @@ router.get("/tasks", auth, async (req, res) => {
 
     try {
         await req.user.populate({
-            path:'tasks',
+            path:'inputs',
             match,
             options:{
                 limit:parseInt(req.query.limit),
@@ -39,23 +39,23 @@ router.get("/tasks", auth, async (req, res) => {
                 sort
             }
         })
-        if (!req.user.tasks) {
-            return res.send({ error: "No tasks" })
+        if (!req.user.inputs) {
+            return res.send({ error: "No inputs" })
         }
-        res.send(req.user.tasks);
+        res.send(req.user.inputs);
     } catch (e) {
         res.status(500).send(e);
     }
 })
 
 
-router.get("/tasks/:id",auth,async(req,res)=>{
+router.get("/inputs/:id",auth,async(req,res)=>{
     try{
         const _id=req.params.id
         if(_id.length!=24){
             return res.status(404).send({error:"Invalid id"})
         }
-        const task= await TASKS.findOne({_id,owner:req.user._id})
+        const task= await INPUTS.findOne({_id,owner:req.user._id})
         if(!task){
             return res.send({error:"No Tasks found"})
         }
@@ -66,7 +66,7 @@ router.get("/tasks/:id",auth,async(req,res)=>{
     }
 })
 
-router.patch("/tasks/:id",auth,async(req,res)=>{
+router.patch("/inputs/:id",auth,async(req,res)=>{
     try{
         const input = Object.keys(req.body)
         const allowedInputs = ["description","completed"]
@@ -80,14 +80,14 @@ router.patch("/tasks/:id",auth,async(req,res)=>{
                return res.status(404).send({error:"Invalid id"})
         }
 
-        const tasks= req.body
-        const updateTask = await TASKS.findOne({_id,owner:req.user._id})
+        const inputs= req.body
+        const updateTask = await INPUTS.findOne({_id,owner:req.user._id})
        
         if(!updateTask){
             return res.status(404).send({error:"No task found"})
         }
 
-        input.forEach((input)=>updateTask[input]=tasks[input])
+        input.forEach((input)=>updateTask[input]=inputs[input])
         await updateTask.save()
 
         res.status(201).send(updateTask)
@@ -99,13 +99,13 @@ router.patch("/tasks/:id",auth,async(req,res)=>{
 
 })
 
-router.delete("/tasks/:id",auth,async(req,res)=>{
+router.delete("/inputs/:id",auth,async(req,res)=>{
     try{
         const _id = req.params.id
         if(_id.length!=24){
             return res.status(404).send({error:"Invalid id"})
         }
-        const deleteTask= await TASKS.findOneAndDelete({_id,owner:req.user._id})
+        const deleteTask= await INPUTS.findOneAndDelete({_id,owner:req.user._id})
         if(!deleteTask){
             return res.status(404).send({error:"No task found"})
         }

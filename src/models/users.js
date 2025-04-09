@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-const Task = require("./tasks")
+const Task = require("./inputs")
 const node = require("debug/src/node")
 
 const userSchema = new mongoose.Schema({
@@ -36,10 +36,7 @@ const userSchema = new mongoose.Schema({
             type:String,
             required:true
         }
-    }],
-    avatar:{
-        type:Buffer
-    }
+    }]
 },{
     timestamps:true
 })
@@ -56,8 +53,14 @@ userSchema.methods.toJSON = function(){
     
     return userObject
 }
-userSchema.virtual('tasks',{
-    ref:"tasks",
+userSchema.virtual('inputs',{
+    ref:"inputs",
+    localField:"_id",
+    foreignField:"owner"
+})
+
+userSchema.virtual('expenses',{
+    ref:"expenses",
     localField:"_id",
     foreignField:"owner"
 })
