@@ -2,7 +2,6 @@ const express =require("express")
 const router = new express.Router()
 const USER =require("../models/users")
 const auth = require("../middleware/auth")
-const sharp = require("sharp")
 const jwt = require('jsonwebtoken');
 const {sendWelEmail,sendCanEmail} = require("../emails/accounts")
 
