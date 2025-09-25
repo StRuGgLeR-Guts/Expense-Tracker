@@ -24,34 +24,35 @@ API Integration: Gemini API
 AI Logic: Predictive investment suggestions
 
 
-Installation
+INSTALLATION:-
 
-Clone the repository
+1. Clone the repository
 
-Navigate to the project folder
+2. Navigate to the project folder
 
-Install dependencies:
-npm install
+3. Install dependencies:
+   npm install
 
-Create a .env file and add:
+4. Create a .env file and add:
 
-MONGO_URI=your_mongodb_uri
-GEMINI_API_KEY=your_api_key
+   MONGO_URI=your_mongodb_uri
+   GEMINI_API_KEY=your_api_key
 
 
-Start the server:
-npm start
+5. Start the server:
+   npm start
 
 Usage
 
-Access APIs via /api/* endpoints to manage user finances
+* Access APIs via /api/* endpoints to manage user finances
 
-AI investment suggestions are computed automatically from user savings data
+* AI investment suggestions are computed automatically from user savings data
 
-Author
+Author:-
 
 Sanpreeth Ranjith
 Email: sanpreethranjith2004@gmail.com
  
+
 
 
